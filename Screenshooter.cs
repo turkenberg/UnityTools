@@ -5,32 +5,39 @@
 public class Screenshooter : MonoBehaviour
 {
     public int minW;
-    public int superScaleFactor;
+    private int superScaleFactor;
 
     const string glyphs = "abcdefghijklmnopqrstuvwxyz0123456789"; //add the characters you want
     public int minCharAmount;
     public int maxCharAmount;
 
-    public string screenShotPath;
-    public string lastName;
+    public string screenShotFolderName = "screenshotSession";
+    private string fullPath;
+    private string lastName;
 
     public bool hideCursorAtCenter;
 
     private void Start()
     {
         superScaleFactor = Mathf.CeilToInt(((float) minW / Screen.width));
-
         Debug.Log("[Screenshooter] - Screenshooter initialized. Screen width: "+ Screen.width.ToString()+", so Superscale factor will be " + superScaleFactor.ToString());
 
-        screenShotPath = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "Unity Screenshots");
+        fullPath = System.IO.Directory.GetCurrentDirectory() + "/Screenshots/" + screenShotFolderName + "/ ";
+        Debug.Log("[Screenshooter] - Screenshoots folder: " + fullPath);
 
-        lastName = "";
+        if (!System.IO.Directory.Exists(fullPath))
+        {
+            System.IO.Directory.CreateDirectory(fullPath);
+            Debug.Log("[Screenshooter] - Screenshot folder created.");
+        }
 
         if (hideCursorAtCenter)
         {
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
         }
+
+        lastName = "";
     }
 
     private void Update()
@@ -51,8 +58,8 @@ public class Screenshooter : MonoBehaviour
         {
             lastName = RandomName(glyphs);
 
-            ScreenCapture.CaptureScreenshot(lastName, superScaleFactor);
-            Debug.Log("[Screenshooter] - Screenshot named " + lastName + " has been saved at " + screenShotPath + ".");
+            ScreenCapture.CaptureScreenshot(fullPath + lastName + ".png", superScaleFactor);
+            Debug.Log("[Screenshooter] - Screenshot named " + lastName + " has been saved at " + fullPath);
         }
 
     }
@@ -61,11 +68,11 @@ public class Screenshooter : MonoBehaviour
     {
         string result = "";
 
-        int charAmount = UnityEngine.Random.Range(minCharAmount, maxCharAmount); //set those to the minimum and maximum length of your string
+        int charAmount = Random.Range(minCharAmount, maxCharAmount); //set those to the minimum and maximum length of your string
 
         for (int i = 0; i < charAmount; i++)
         {
-            result += glyphs[UnityEngine.Random.Range(0, glyphs.Length)];
+            result += glyphs[Random.Range(0, glyphs.Length)];
         }
 
         return result;
