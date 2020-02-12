@@ -52,6 +52,7 @@ public class PrefabsDistributor
     static bool LayAllAssetsValidation()
     {
         string filePath = AssetDatabase.GetAssetPath(Selection.activeObject);
+        if (filePath == "") return false;
         FileAttributes attr = File.GetAttributes(filePath);
         return ((attr & FileAttributes.Directory) == FileAttributes.Directory && (AssetDatabase.FindAssets("t:prefab", new string[] { filePath }).Length > 0));
     }
